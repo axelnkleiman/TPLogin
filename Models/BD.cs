@@ -6,8 +6,8 @@ public class BD
     private static string _connectionString = @"Server = .";
     public static void AgregarUsuario(User usuario){
         using (SqlConnection db = new SqlConnection(_connectionString)){
-            string sql ="INSERT INTO User(Username,Contrasena,Respuesta,Mail,FechaNacimiento) VALUES (@pUsername,@pContrasena,@pRespuesta,@Mail,@pFechaNacimiento)";
-            db.Execute(sql, new {pUsername = usuario.Username, p.Contrasena = usuario.Contrasena, pRespuesta = usuario.Respuesta, pMail = usuario.Mail, pFechaNacimiento = usuario.FechaNacimiento});
+            string sql ="INSERT INTO User(Username,Contrasena,Respuesta,Mail,FechaNacimiento,idPregunta) VALUES (@pUsername,@pContrasena,@pRespuesta,@Mail,@pFechaNacimiento,@pidPregunta)";
+            db.Execute(sql, new {pUsername = usuario.Username, p.Contrasena = usuario.Contrasena, pRespuesta = usuario.Respuesta, pMail = usuario.Mail, pFechaNacimiento = usuario.FechaNacimiento, pidPregunta = usuario.Pregunta});
         }
     }
     public static User VerInfoUsuario(string username){
@@ -18,10 +18,20 @@ public class BD
         }
         return infoUsuario;
     }
-    public static void UpdatearContrasena(string nuevaContrasena,string mail,string respuesta){
+    public static bool UpdatearContrasena(string nuevaContrasena,string mail,string respuesta){
+        bool correcto = false;
         using (SqlConnection db = new SqlConnection(_connectionString)){
             string sql = "UPDATE User SET Contrasena = @nuevaContrasena WHERE Mail = @mail AND Respuesta = @respuesta";
-            db.Execute(sql, new {Contrasena = nuevaContrasena, Mail = mail, Respuesta = respuesta});
+            correcto = db.Execute(sql, new {Contrasena = nuevaContrasena, Mail = mail, Respuesta = respuesta});
         }
+        return correcto;
+    }
+    public static List<Pregunta> ObtenerPreguntas(){
+        List<Pregunta> preguntas = null;
+        using (SqlConnection db = new SqlConnection(_connectionString)){
+            string sql = "SELECT * FROM Pregunta";
+            preguntas = db.Query<Pregunta>(sql).ToList();
+        }
+        return preguntas;
     }
 }
